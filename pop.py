@@ -1,7 +1,7 @@
 import os
 import re
-from telethon.sync import TelegramClient, events
-from datetime import datetime
+from telethon.sync import TelegramClient, events, errors
+from datetime import datetime, time
 
 # Get the current date and time
 current_datetime = datetime.now()
@@ -25,7 +25,7 @@ logss_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fetchedda
 client = TelegramClient(name, api_id, api_hash)
 
 # Chat identifier of the group you want to listen to
-group_chat_id = -1002081980221  # Replace with the actual chat ID fintrades
+group_chat_id = -1002081980221   #1002081980221   Replace with the actual chat ID fintrades
 
 # 1001842161161 #heuid channel id#
 #1002081980221
@@ -97,6 +97,7 @@ async def newMessageListene(event):
                     place = sf1 + "\n" + "\n" + "ABOVE " + numc_value
                     if await client.send_message(destination_chat_id, place):
                         flag = 1
+                        #herer
                         print("-- order sent tag--" + "\n" + place)
                         with open(logss_path, 'a') as fileo:
                             fileo.write(f"-- order sent --\n\norder_date: {formatted_date}\norder_time: {datetime.now()}\n\n{place}\n\n\n")
@@ -115,6 +116,7 @@ async def newMessageListene(event):
                     numc_value = extractmy_value(message_text)
                     placetr = sfk + "\n" + "\n" + "ABOVE " + numc_value
                     if await client.send_message(destination_chat_id, placetr):
+                        #herer
                         print("-- order sent dir --" + "\n" + placetr)
                         with open(logss_path, 'a') as fil:
                             fil.write(f"-- order sent --\n\norder_date: {formatted_date}\norder_time: {datetime.now()}\n\n{placetr}\n\n\n")
@@ -168,6 +170,7 @@ async def newMessageListene(event):
             sfo = (f'I AM BUYING {insname.upper()} {insvalue} {instype.upper()}\n\nABOVE {abvval}')
             if flag != 1:
                 if await client.send_message(destination_chat_id, sfo):
+                    #herer
                     print("-- order sent singletxt--" + "\n" + sfo)
                     with open(logss_path, 'a') as fila:
                         fila.write(f"-- order sent --\n\norder_date: {formatted_date}\norder_time: {datetime.now()}\n\n{sfo}\n\n\n")
@@ -268,4 +271,12 @@ def extract_numeric_stpl(input_string):
 # Start the client
 with client:
     print("Listening for new messages...")
-    client.run_until_disconnected()
+    while True:
+        try:
+            client.run_until_disconnected()
+        except errors.ConnectionError as e:
+            # Handle the connection error gracefully
+            print(f"Connection closed with error code: {e.code}")
+            print("Reconnecting...")
+            time.sleep(5)  # Wait for a few seconds before reconnecting
+            
